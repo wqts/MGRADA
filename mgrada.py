@@ -181,7 +181,7 @@ def main_worker(sweep_q, worker_q):
     config = worker_data.config
     fold = worker_data.num + 1
     gpu_id = fold % gpu_count
-    os.environ["CUDA_VISIBLE_DEVICES"] = gpu_id
+    os.environ["CUDA_VISIBLE_DEVICES"] = str(gpu_id)
 
     dset_dict = load_data(config, fold)
 
