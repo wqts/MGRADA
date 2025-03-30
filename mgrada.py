@@ -247,7 +247,7 @@ if __name__ == "__main__":
         "gamma": 0.99,          # decay for label propagation
         "beta": 10,             # weight of curriculum loss
         "tau": 0.5,             # threshold for curriculum loss
-        "queue_size": 5,        # size of the queue for storing features
+        "queue_size": 3,        # size of the queue for storing features
         "threshold_min": 0.5,   # minimum threshold for curriculum loss
         "threshold_max": 0.9,   # maximum threshold for curriculum loss
     }
@@ -319,7 +319,7 @@ if __name__ == "__main__":
     }
 
     config = default_config_SEED
-    # config["folds"] = 1
+    config["folds"] = 1
     paths = ["./data", "/kaggle/input/eeg-data", "/root/autodl-fs/eeg-data"]
     for path in paths:
         if os.path.exists(path):

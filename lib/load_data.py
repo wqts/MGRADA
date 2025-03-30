@@ -79,7 +79,6 @@ def load_SEED(subject, n_labeled_trail=3, session=1, data_path="./data"):
 
     for i in range(1, 16):
         de = np.transpose(df[f'de_LDS{i}'], (1, 0, 2)).reshape(-1, 310)
-        psd = np.transpose(df[f'psd_LDS{i}'], (1, 0, 2)).reshape(-1, 310)
         label = np.full((len(de),), fill_value=session_label[i - 1])
         de_list.append(de)
         label_list.append(label)

@@ -20,7 +20,7 @@ parameters:
     - 9
   n_labeled_subject:
     distribution: int_uniform
-    min: 1
+    min: 10
     max: 13
   feature:
     value: de
@@ -35,17 +35,16 @@ parameters:
     - 8
     - 16
     - 32
-    - 64
   epochs:
-    value: 10
+    value: 50
   it_per_epoch:
     distribution: categorical
     values:
     - 10
     - 20
     - 30
-    - 40
-    - 50
+    # - 40
+    # - 50
   optimizer:
     value: Adam
   lr:
@@ -90,7 +89,7 @@ parameters:
   queue_size:
     distribution: int_uniform
     min: 1
-    max: 8
+    max: 5
   threshold_min:
     value: 0.5
   threshold_max:
