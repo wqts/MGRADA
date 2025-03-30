@@ -23,10 +23,7 @@ parameters:
     min: 1
     max: 13
   feature:
-    distribution: categorical
-    values:
-    - de
-    - psd
+    value: de
   in_feature:
     value: 310
 
@@ -40,7 +37,7 @@ parameters:
     - 32
     - 64
   epochs:
-    value: 200
+    value: 10
   it_per_epoch:
     distribution: categorical
     values:
