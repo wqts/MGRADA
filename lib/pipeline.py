@@ -20,6 +20,7 @@ def main(config, main_worker):
     project_url = sweep_run.get_project_url()
     sweep_group_url = "{}/groups/{}".format(project_url, sweep_id)
     sweep_run.notes = sweep_group_url
+    sweep_run.name = sweep_run.id
 
     sweep_q = multiprocessing.Queue()
     workers = []
