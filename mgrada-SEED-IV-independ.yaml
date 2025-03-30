@@ -1,0 +1,93 @@
+project: MGRADA-Sweep
+method: random
+metric:
+  goal: maximize
+  name: accuracy_mean
+parameters:
+  folds:
+    value: 15
+  dataset:
+    value: SEED-IV
+  num_subject:
+    value: 15
+  n_class:
+    value: 4
+  mode:
+    value: independ
+  n_labeled_subject:
+    distribution: int_uniform
+    min: 1
+    max: 13
+  feature:
+    value: de
+  in_feature:
+    value: 310
+
+  alg:
+    value: mgrada
+  batch_size:
+    distribution: categorical
+    values:
+    - 8
+    - 16
+    - 32
+  epochs:
+    value: 50
+  it_per_epoch:
+    distribution: categorical
+    values:
+    - 10
+    - 20
+    - 30
+    # - 40
+    # - 50
+  optimizer:
+    value: Adam
+  lr:
+    distribution: log_uniform_values
+    min: 1e-4
+    max: 1e-3
+  # specific
+  t:
+    distribution: uniform
+    min: 0.1
+    max: 0.9
+  transfer_weight:
+    distribution: log_uniform_values
+    min: 0.1
+    max: 10
+  alpha:
+    distribution: categorical
+    values:
+    - 0.9
+    - 0.99
+    - 0.999
+    - 0.9999
+  sigma:
+    distribution: uniform
+    min: 0.1
+    max: 0.5
+  gamma:
+    distribution: categorical
+    values:
+    - 0.9
+    - 0.99
+    - 0.999
+    - 0.9999
+  beta:
+    distribution: uniform
+    min: 0.0
+    max: 1.0
+  tau:
+    distribution: uniform
+    min: 0.0
+    max: 1.0      
+  queue_size:
+    distribution: int_uniform
+    min: 1
+    max: 5
+  threshold_min:
+    value: 0.5
+  threshold_max:
+    value: 0.9
+program: mgrada.py

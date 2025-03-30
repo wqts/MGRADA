@@ -220,7 +220,6 @@ if __name__ == "__main__":
     torch.multiprocessing.set_start_method('spawn')
     default_config_SEED={
         # data
-        "data_path": "./data",
         "folds": 15,
         "dataset": "SEED",
         "num_subject": 15,
@@ -253,7 +252,6 @@ if __name__ == "__main__":
     }
     default_config_SEED_IV={
         # data
-        "data_path": "./data",
         "folds": 15,
         "dataset": "SEED-IV",
         "num_subject": 15,
@@ -286,13 +284,11 @@ if __name__ == "__main__":
     }
     default_config_FACED={
         # data
-        "data_path": "./data",
         "folds": 10,
         "dataset": "FACED",
         "num_subject": 123,
         "n_class": 9, # in [3, 9]
         "mode": "independ",
-        # "n_labeled_trail": 16, # if mode == "depend"
         "n_labeled_subject": 37, # if mode == "independ" in [37, 56, 74]
         "feature": "de",
         "in_feature": 160,
@@ -319,7 +315,7 @@ if __name__ == "__main__":
     }
 
     config = default_config_SEED
-    config["folds"] = 1
+    # config["folds"] = 1
     paths = ["./data", "/kaggle/input/eeg-data", "/root/autodl-fs/eeg-data"]
     for path in paths:
         if os.path.exists(path):

@@ -4,28 +4,26 @@ metric:
   goal: maximize
   name: accuracy_mean
 parameters:
+  folds:
+    value: 10
   dataset:
-    value: SEED
+    value: FACED
   num_subject:
-    value: 15
+    value: 123
   n_class:
     value: 3
   mode:
     value: independ
-  n_labeled_trail:
+  n_labeled_subject:
     distribution: categorical
     values:
-    - 3
-    - 6
-    - 9
-  n_labeled_subject:
-    distribution: int_uniform
-    min: 10
-    max: 13
+    - 37
+    - 56
+    - 74
   feature:
     value: de
   in_feature:
-    value: 310
+    value: 160
 
   alg:
     value: mgrada
