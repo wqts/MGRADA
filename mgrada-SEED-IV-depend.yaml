@@ -1,4 +1,4 @@
-project: MGRADA-Sweep
+project: MGRADA-SEED-IV-depend
 method: random
 metric:
   goal: maximize

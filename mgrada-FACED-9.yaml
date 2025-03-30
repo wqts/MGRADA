@@ -1,4 +1,4 @@
-project: MGRADA-Sweep
+project: MGRADA-FACED-9
 method: random
 metric:
   goal: maximize
