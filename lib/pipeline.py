@@ -13,6 +13,14 @@ WorkerInitData = collections.namedtuple(
 def main(config, main_worker):
     # Spin up workers before calling wandb.init()
     # Workers will be blocked on a queue waiting to start
+
+    sweep_run = wandb.init(project="MGRADA", config=config)
+    sweep_id = sweep_run.sweep_id or "unknown"
+    sweep_url = sweep_run.get_sweep_url()
+    project_url = sweep_run.get_project_url()
+    sweep_group_url = "{}/groups/{}".format(project_url, sweep_id)
+    sweep_run.notes = sweep_group_url
+
     sweep_q = multiprocessing.Queue()
     workers = []
     for num in range(config["folds"]):
@@ -22,14 +30,6 @@ def main(config, main_worker):
         )
         p.start()
         workers.append(Worker(queue=q, process=p))
-
-    sweep_run = wandb.init(project="MGRADA", config=config)
-    sweep_id = sweep_run.sweep_id or "unknown"
-    sweep_url = sweep_run.get_sweep_url()
-    project_url = sweep_run.get_project_url()
-    sweep_group_url = "{}/groups/{}".format(project_url, sweep_id)
-    sweep_run.notes = sweep_group_url
-    sweep_run.save()
 
     metrics = []
     for num in range(config["folds"]):
