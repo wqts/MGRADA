@@ -85,7 +85,7 @@ parameters:
   queue_size:
     distribution: int_uniform
     min: 1
-    max: 5
+    max: 3
   threshold_min:
     value: 0.5
   threshold_max:
