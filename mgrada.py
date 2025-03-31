@@ -48,7 +48,7 @@ def label_propagation(teacher_feature_lb, teacher_feature_ulb, teacher_feature_t
     
     # 迭代方法
     f = y.clone()
-    for _ in range(50):  # 迭代次数
+    for _ in range(10):  # 迭代次数
         f = gamma * torch.matmul(s, f) + (1 - gamma) * y
 
     pseudo_labels = torch.softmax(f, dim=1)
@@ -59,21 +59,22 @@ def label_propagation(teacher_feature_lb, teacher_feature_ulb, teacher_feature_t
     return pseudo_labels_ulb, pseudo_labels_tar
 
 def get_curriculum_pseudo_labels(config, student_logits, teacher_pseudo_labels, n_class, threshold_min=0.5, threshold_max=0.9):
-    assert(len(student_logits) == len(teacher_pseudo_labels))
-    eql_list = torch.zeros(n_class).to(config["device"])
-    tea_list = torch.bincount(teacher_pseudo_labels.argmax(dim=1), minlength=n_class).float() + 1
-    for i in range(len(student_logits)):
-        stu_pred = student_logits[i].argmax()
-        tea_pred = teacher_pseudo_labels[i].argmax()
-        if stu_pred == tea_pred:
-            eql_list[stu_pred] += 1
+    assert len(student_logits) == len(teacher_pseudo_labels)
 
+    # 计算 eql_list 和 tea_list
+    stu_preds = student_logits.argmax(dim=1)
+    tea_preds = teacher_pseudo_labels.argmax(dim=1)
+    eql_mask = (stu_preds == tea_preds)
+    eql_list = torch.bincount(tea_preds[eql_mask], minlength=n_class).float().to(config["device"])
+    tea_list = torch.bincount(tea_preds, minlength=n_class).float().to(config["device"]) + 1
+
+    # 计算阈值
     threshold = threshold_min + (threshold_max - threshold_min) * (eql_list / tea_list)
 
-    for i in range(len(teacher_pseudo_labels)):
-        tea_pred = teacher_pseudo_labels[i].argmax()
-        if teacher_pseudo_labels[i][tea_pred] < threshold[tea_pred]:
-            teacher_pseudo_labels[i] = 0
+    # 应用阈值过滤
+    max_probs, tea_preds = teacher_pseudo_labels.max(dim=1)
+    mask = max_probs >= threshold[tea_preds]
+    teacher_pseudo_labels = teacher_pseudo_labels * mask.unsqueeze(1).float()
 
     return teacher_pseudo_labels
 
@@ -234,7 +235,7 @@ if __name__ == "__main__":
         # alg
         "alg": "mgrada",
         "batch_size": 32,
-        "epochs": 10,
+        "epochs": 50,
         "it_per_epoch": 50,
         "optimizer": "Adam",
         "lr": 0.0003,
