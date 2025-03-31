@@ -50,10 +50,9 @@ def load_data(config, fold):
     transfer_all_data_to_tensor(dset_dict["lb_dset"])
     transfer_all_data_to_tensor(dset_dict["ulb_dset"])
     transfer_all_data_to_tensor(dset_dict["tar_dset"])
-    if config["device"] == "cuda":
-        load_all_data_to_cuda(dset_dict["lb_dset"])
-        load_all_data_to_cuda(dset_dict["ulb_dset"])
-        load_all_data_to_cuda(dset_dict["tar_dset"])
+    load_all_data_to_device(dset_dict["lb_dset"], config["device"])
+    load_all_data_to_device(dset_dict["ulb_dset"], config["device"])
+    load_all_data_to_device(dset_dict["tar_dset"], config["device"])
     return dset_dict
 
 
@@ -297,9 +296,9 @@ def transfer_all_data_to_tensor(dset: dict):
     dset["de"] = torch.from_numpy(dset["de"]).float()
     dset["label"] = torch.from_numpy(dset["label"]).long()
 
-def load_all_data_to_cuda(dset: dict):
-    dset["de"] = dset["de"].cuda().contiguous()
-    dset["label"] = dset["label"].cuda().contiguous()
+def load_all_data_to_device(dset: dict, device):
+    dset["de"] = dset["de"].to(device).contiguous()
+    dset["label"] = dset["label"].to(device).contiguous()
 
 if __name__ == "__main__":
     # config = {"dataset": "SEED-IV", "n_labeled_trail": 4}

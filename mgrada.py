@@ -13,8 +13,6 @@ from lib.pipeline import main
 from lib.utils import test, get_batch_indices, sharpen
 
 WorkerDoneData = collections.namedtuple("WorkerDoneData", ("best_accuracy"))
-gpu_count = torch.cuda.device_count()
-
 
 def update_teacher_model(student_model, teacher_model, alpha):
     for student_param, teacher_param in zip(student_model.parameters(), teacher_model.parameters()):
@@ -180,8 +178,11 @@ def main_worker(sweep_q, worker_q):
     worker_data = worker_q.get()
     config = worker_data.config
     fold = worker_data.num + 1
-    gpu_id = fold % gpu_count
-    os.environ["CUDA_VISIBLE_DEVICES"] = str(gpu_id)
+
+    if torch.cuda.is_available():
+        gpu_count = torch.cuda.device_count()
+        gpu_id = fold % gpu_count
+        os.environ["CUDA_VISIBLE_DEVICES"] = str(gpu_id)
 
     dset_dict = load_data(config, fold)
 
