@@ -226,7 +226,7 @@ if __name__ == "__main__":
         "num_subject": 15,
         "n_class": 3,
         "mode": "independ",
-        "n_labeled_trail": 9, # if mode == "depend"
+        # "n_labeled_trail": 9, # if mode == "depend"
         "n_labeled_subject": 13, # if mode == "independ"
         "feature": "de",
         "in_feature": 310,
@@ -258,7 +258,7 @@ if __name__ == "__main__":
         "num_subject": 15,
         "n_class": 4,
         "mode": "independ",
-        "n_labeled_trail": 16, # if mode == "depend"
+        # "n_labeled_trail": 16, # if mode == "depend"
         "n_labeled_subject": 13, # if mode == "independ"
         "feature": "de",
         "in_feature": 310,
@@ -266,7 +266,7 @@ if __name__ == "__main__":
         # alg
         "alg": "mgrada",
         "batch_size": 8,
-        "epochs": 200,
+        "epochs": 10,
         "it_per_epoch": 50,
         "optimizer": "Adam",
         "lr": 0.0003,
@@ -297,7 +297,7 @@ if __name__ == "__main__":
         # alg
         "alg": "mgrada",
         "batch_size": 32,
-        "epochs": 200,
+        "epochs": 10,
         "it_per_epoch": 50,
         "optimizer": "Adam",
         "lr": 0.0003,
@@ -316,6 +316,7 @@ if __name__ == "__main__":
     }
 
     config = default_config_SEED
+    
     config["device"] = "cpu"
     if torch.cuda.is_available():
         config["device"] = "cuda"
@@ -327,4 +328,4 @@ if __name__ == "__main__":
             break
     else:
         raise ValueError("No valid data path found.")
-    main(config=default_config_SEED, main_worker=main_worker)
+    main(config=config, main_worker=main_worker)
