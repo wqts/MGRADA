@@ -15,6 +15,7 @@ def main(config, main_worker):
     # Workers will be blocked on a queue waiting to start
 
     sweep_run = wandb.init(project="MGRADA", config=config)
+    config = dict(sweep_run.config)
     sweep_id = sweep_run.sweep_id or "unknown"
     sweep_url = sweep_run.get_sweep_url()
     project_url = sweep_run.get_project_url()
@@ -39,7 +40,7 @@ def main(config, main_worker):
         worker.queue.put(
             WorkerInitData(
                 num=num,
-                config=dict(sweep_run.config),
+                config=config,
             )
         )
 
