@@ -2,8 +2,8 @@ import torch
 from torch import nn
 from torch.utils.data import TensorDataset, DataLoader
 
-def get_batch_indices(dset, batch_size):
-    batch_indices = torch.randint(0, len(dset['label']), (batch_size,), device="cuda")
+def get_batch_indices(config, dset, batch_size):
+    batch_indices = torch.randint(0, len(dset['label']), (batch_size,), device=config["device"])
     return batch_indices
 
 def sharpen(probabilities, T):
@@ -30,7 +30,7 @@ def test(config, dset, model, feature):
     test_loss, correct = 0, 0
     with torch.no_grad():
         for X, y in dataloader:
-            X, y = X.cuda(), y.cuda()
+            X, y = X.to(config["device"]), y.to(config["device"])
             pred = model(X)
             logits = pred["logits"]
             test_loss += loss_fn(logits, y).item()

@@ -60,9 +60,9 @@ def label_propagation(teacher_feature_lb, teacher_feature_ulb, teacher_feature_t
 
     return pseudo_labels_ulb, pseudo_labels_tar
 
-def get_curriculum_pseudo_labels(student_logits, teacher_pseudo_labels, n_class, threshold_min=0.5, threshold_max=0.9):
+def get_curriculum_pseudo_labels(config, student_logits, teacher_pseudo_labels, n_class, threshold_min=0.5, threshold_max=0.9):
     assert(len(student_logits) == len(teacher_pseudo_labels))
-    eql_list = torch.zeros(n_class).cuda()
+    eql_list = torch.zeros(n_class).to(config["device"])
     tea_list = torch.bincount(teacher_pseudo_labels.argmax(dim=1), minlength=n_class).float() + 1
     for i in range(len(student_logits)):
         stu_pred = student_logits[i].argmax()
@@ -92,9 +92,9 @@ def train_epoch(config, dset_dict, student_model, teacher_model, global_domain_a
     y_lb_queue = collections.deque(maxlen=queue_size)
 
     for i in range(config["it_per_epoch"]):
-        lb_indices = get_batch_indices(dset_dict['lb_dset'], config["batch_size"])
-        ulb_indices = get_batch_indices(dset_dict['ulb_dset'], config["batch_size"])
-        tar_indices = get_batch_indices(dset_dict['tar_dset'], config["batch_size"])
+        lb_indices = get_batch_indices(config, dset_dict['lb_dset'], config["batch_size"])
+        ulb_indices = get_batch_indices(config, dset_dict['ulb_dset'], config["batch_size"])
+        tar_indices = get_batch_indices(config, dset_dict['tar_dset'], config["batch_size"])
         x_lb = torch.index_select(dset_dict['lb_dset'][config["feature"]], 0, lb_indices)
         y_lb = torch.index_select(dset_dict['lb_dset']['label'], 0, lb_indices)
         x_ulb = torch.index_select(dset_dict['ulb_dset'][config["feature"]], 0, ulb_indices)
@@ -148,13 +148,13 @@ def train_epoch(config, dset_dict, student_model, teacher_model, global_domain_a
         # 课程伪标签
         logits_ulb = pred_ulb["logits"]
         logits_tar = pred_tar["logits"]
-        pseudo_labels_ulb = get_curriculum_pseudo_labels(logits_ulb, pseudo_labels_ulb, config["n_class"], config["threshold_min"], config["threshold_max"])
-        pseudo_labels_tar = get_curriculum_pseudo_labels(logits_tar, pseudo_labels_tar, config["n_class"], config["threshold_min"], config["threshold_max"])
+        pseudo_labels_ulb = get_curriculum_pseudo_labels(config, logits_ulb, pseudo_labels_ulb, config["n_class"], config["threshold_min"], config["threshold_max"])
+        pseudo_labels_tar = get_curriculum_pseudo_labels(config, logits_tar, pseudo_labels_tar, config["n_class"], config["threshold_min"], config["threshold_max"])
 
         sub_domain_transfer_loss = 0
         for j, sub_domain_adv in enumerate(sub_domain_advs):
             sub_domain_j_transfer_loss = sub_domain_adv(torch.cat((feature_lb, feature_ulb)), torch.cat((feature_tar, feature_tar)))
-            weight = torch.cat((torch.eye(config["n_class"]).cuda()[y_lb], pseudo_labels_ulb, pseudo_labels_tar, pseudo_labels_tar))[:, j]
+            weight = torch.cat((torch.eye(config["n_class"]).to(config["device"])[y_lb], pseudo_labels_ulb, pseudo_labels_tar, pseudo_labels_tar))[:, j]
             sub_domain_transfer_loss += (weight * torch.squeeze(sub_domain_j_transfer_loss, dim=1)).mean()
 
         global_domain_acc = global_domain_adv.domain_discriminator_accuracy
@@ -185,18 +185,18 @@ def main_worker(sweep_q, worker_q):
 
     dset_dict = load_data(config, fold)
 
-    student_model = Model(config).cuda()
-    teacher_model = Model(config).cuda()
+    student_model = Model(config).to(config["device"])
+    teacher_model = Model(config).to(config["device"])
     teacher_model.load_state_dict(student_model.state_dict())
-    domain_discri = DomainDiscriminator(in_feature=64, hidden_size=64).cuda()
+    domain_discri = DomainDiscriminator(in_feature=64, hidden_size=64).to(config["device"])
     optimizer = Adam(params=list(student_model.parameters()) + list(domain_discri.parameters()), lr=config["lr"])
-    global_domain_adv = DomainAdversarialLoss(domain_discri).cuda()
+    global_domain_adv = DomainAdversarialLoss(domain_discri).to(config["device"])
 
     sub_domain_advs = []
     params = list(student_model.parameters())
     for i in range(config["n_class"]):
-        domain_discri = DomainDiscriminator(in_feature=64, hidden_size=64).cuda()
-        sub_domain_advs.append(DomainAdversarialLoss(domain_discri, 'none').cuda())
+        domain_discri = DomainDiscriminator(in_feature=64, hidden_size=64).to(config["device"])
+        sub_domain_advs.append(DomainAdversarialLoss(domain_discri, 'none').to(config["device"]))
         params += list(domain_discri.parameters())
 
     best_accuracy = 0
@@ -315,6 +315,9 @@ if __name__ == "__main__":
     }
 
     config = default_config_SEED
+    config["device"] = "cpu"
+    if torch.cuda.is_available():
+        config["device"] = "cuda"
     # config["folds"] = 1
     paths = ["./data", "/kaggle/input/eeg-data", "/root/autodl-fs/eeg-data"]
     for path in paths:

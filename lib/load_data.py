@@ -50,9 +50,10 @@ def load_data(config, fold):
     transfer_all_data_to_tensor(dset_dict["lb_dset"])
     transfer_all_data_to_tensor(dset_dict["ulb_dset"])
     transfer_all_data_to_tensor(dset_dict["tar_dset"])
-    load_all_data_to_cuda(dset_dict["lb_dset"])
-    load_all_data_to_cuda(dset_dict["ulb_dset"])
-    load_all_data_to_cuda(dset_dict["tar_dset"])
+    if config["device"] == "cuda":
+        load_all_data_to_cuda(dset_dict["lb_dset"])
+        load_all_data_to_cuda(dset_dict["ulb_dset"])
+        load_all_data_to_cuda(dset_dict["tar_dset"])
     return dset_dict
 
 
