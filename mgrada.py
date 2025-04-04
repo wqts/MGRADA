@@ -243,7 +243,7 @@ if __name__ == "__main__":
         # specific
         "t": 0.4,               # sharpening temperature
         "transfer_weight": 4,   # weight of transfer loss
-        "alpha": 0/99,          # momentum for teacher model
+        "alpha": 0.99,          # momentum for teacher model
         "sigma": 0.1,          # bandwidth for similarity matrix
         "gamma": 0.99,          # decay for label propagation
         "beta": 0.3,             # weight of curriculum loss
