@@ -32,7 +32,7 @@ parameters:
     - 16
     - 32
   epochs:
-    value: 50
+    value: 200
   it_per_epoch:
     distribution: categorical
     values:
