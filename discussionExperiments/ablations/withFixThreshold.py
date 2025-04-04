@@ -311,7 +311,39 @@ if __name__ == "__main__":
         "threshold_max": 0.9,   # maximum threshold for curriculum loss
     }
 
-    config = default_config_SEED
+    default_config_SEED_IV={
+        # data
+        "folds": 15,
+        "dataset": "SEED-IV",
+        "num_subject": 15,
+        "n_class": 4,
+        "mode": "independ",
+        "n_labeled_subject": 13,
+        "feature": "de",
+        "in_feature": 310,
+        
+        # alg
+        "alg": "mgrada",
+        "batch_size": 8,
+        "epochs": 200,
+        "it_per_epoch": 30,
+        "optimizer": "Adam",
+        "lr": 0.001,
+
+        # specific
+        "t": 0.4,               # sharpening temperature
+        "transfer_weight": 4,   # weight of transfer loss
+        "alpha": 0.999,          # momentum for teacher model
+        "sigma": 0.1,          # bandwidth for similarity matrix
+        "gamma": 0.99,          # decay for label propagation
+        "beta": 0.3,             # weight of curriculum loss
+        "tau": 0.6,             # threshold for curriculum loss
+        "queue_size": 3,        # size of the queue for storing features
+        "threshold_min": 0.9,   # minimum threshold for curriculum loss
+        "threshold_max": 0.9,   # maximum threshold for curriculum loss
+    }
+
+    config = default_config_SEED_IV
     
     config["device"] = "cpu"
     if torch.cuda.is_available():
