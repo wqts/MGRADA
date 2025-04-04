@@ -119,59 +119,7 @@ def train_epoch(config, dset_dict, student_model, teacher_model, global_domain_a
         cls_loss = F.cross_entropy(logits_lb, y_lb)
         global_transfer_loss = global_domain_adv(torch.cat((feature_lb, feature_ulb)), torch.cat((feature_tar, feature_tar)))
 
-        # predict pseudo label
-        with torch.no_grad():
-            teacher_pred_lb = teacher_model(x_lb)
-            teacher_feature_lb = teacher_pred_lb["feature"]
-            teacher_pred_ulb = teacher_model(x_ulb)
-            teacher_feature_ulb = teacher_pred_ulb["feature"]
-            teacher_pred_tar = teacher_model(x_tar)
-            teacher_feature_tar = teacher_pred_tar["feature"]
-
-            if len(feature_lb_queue) == queue_size:
-                # 如果队列已满，则移除最旧的元素
-                feature_lb_queue.popleft()
-                feature_ulb_queue.popleft()
-                feature_tar_queue.popleft()
-                y_lb_queue.popleft()
-
-            # 将当前 batch 的特征和标签加入队列
-            feature_lb_queue.append(teacher_feature_lb)
-            feature_ulb_queue.append(teacher_feature_ulb)
-            feature_tar_queue.append(teacher_feature_tar)
-            y_lb_queue.append(y_lb)
-
-            # 从队列中获取所有的特征和标签
-            all_teacher_feature_lb = torch.cat(list(feature_lb_queue), dim=0)
-            all_teacher_feature_ulb = torch.cat(list(feature_ulb_queue), dim=0)
-            all_teacher_feature_tar = torch.cat(list(feature_tar_queue), dim=0)
-            all_y_lb = torch.cat(list(y_lb_queue), dim=0)
-
-            # 通过标签传播获得伪标签
-            pseudo_labels_ulb, pseudo_labels_tar = label_propagation(all_teacher_feature_lb, all_teacher_feature_ulb, all_teacher_feature_tar, all_y_lb, config["n_class"], config["sigma"], config["gamma"])
-            pseudo_labels_ulb = sharpen(pseudo_labels_ulb[-len(teacher_feature_ulb):], config["t"])
-            pseudo_labels_tar = sharpen(pseudo_labels_tar[-len(teacher_feature_tar):], config["t"])
-        
-        # 课程伪标签
-        logits_ulb = pred_ulb["logits"]
-        logits_tar = pred_tar["logits"]
-        pseudo_labels_ulb = get_curriculum_pseudo_labels(config, logits_ulb, pseudo_labels_ulb, config["n_class"], config["threshold_min"], config["threshold_max"])
-        pseudo_labels_tar = get_curriculum_pseudo_labels(config, logits_tar, pseudo_labels_tar, config["n_class"], config["threshold_min"], config["threshold_max"])
-
-        sub_domain_transfer_loss = 0
-        for j, sub_domain_adv in enumerate(sub_domain_advs):
-            sub_domain_j_transfer_loss = sub_domain_adv(torch.cat((feature_lb, feature_ulb)), torch.cat((feature_tar, feature_tar)))
-            weight = torch.cat((torch.eye(config["n_class"]).to(config["device"])[y_lb], pseudo_labels_ulb, pseudo_labels_tar, pseudo_labels_tar))[:, j]
-            sub_domain_transfer_loss += (weight * torch.squeeze(sub_domain_j_transfer_loss, dim=1)).mean()
-
-        global_domain_acc = global_domain_adv.domain_discriminator_accuracy
-
-        # 计算 λ
-        beta = config["beta"]
-        tau = config["tau"]
-        lamda = 1 / (1 + torch.exp(-beta * (torch.abs(global_domain_acc - 0.5) - tau)))
-
-        transfer_loss = lamda * global_transfer_loss + (1 - lamda) * sub_domain_transfer_loss
+        transfer_loss = global_transfer_loss
 
         loss = cls_loss + transfer_loss * config["transfer_weight"]
 
@@ -230,7 +178,7 @@ def main(config, main_worker):
     # Spin up workers before calling wandb.init()
     # Workers will be blocked on a queue waiting to start
 
-    sweep_run = wandb.init(project="withoutTeacher", config=config)
+    sweep_run = wandb.init(project="withoutSubdomain", config=config)
     config = dict(sweep_run.config)
     sweep_id = sweep_run.sweep_id or "unknown"
     sweep_url = sweep_run.get_sweep_url()

@@ -164,12 +164,7 @@ def train_epoch(config, dset_dict, student_model, teacher_model, global_domain_a
             weight = torch.cat((torch.eye(config["n_class"]).to(config["device"])[y_lb], pseudo_labels_ulb, pseudo_labels_tar, pseudo_labels_tar))[:, j]
             sub_domain_transfer_loss += (weight * torch.squeeze(sub_domain_j_transfer_loss, dim=1)).mean()
 
-        global_domain_acc = global_domain_adv.domain_discriminator_accuracy
-
-        # 计算 λ
-        beta = config["beta"]
-        tau = config["tau"]
-        lamda = 1 / (1 + torch.exp(-beta * (torch.abs(global_domain_acc - 0.5) - tau)))
+        lamda = 0.5
 
         transfer_loss = lamda * global_transfer_loss + (1 - lamda) * sub_domain_transfer_loss
 
@@ -230,7 +225,7 @@ def main(config, main_worker):
     # Spin up workers before calling wandb.init()
     # Workers will be blocked on a queue waiting to start
 
-    sweep_run = wandb.init(project="withoutTeacher", config=config)
+    sweep_run = wandb.init(project="withoutAdaptiveWeight", config=config)
     config = dict(sweep_run.config)
     sweep_id = sweep_run.sweep_id or "unknown"
     sweep_url = sweep_run.get_sweep_url()

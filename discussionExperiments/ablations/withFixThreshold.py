@@ -230,7 +230,7 @@ def main(config, main_worker):
     # Spin up workers before calling wandb.init()
     # Workers will be blocked on a queue waiting to start
 
-    sweep_run = wandb.init(project="withoutTeacher", config=config)
+    sweep_run = wandb.init(project="withFixThreshold", config=config)
     config = dict(sweep_run.config)
     sweep_id = sweep_run.sweep_id or "unknown"
     sweep_url = sweep_run.get_sweep_url()
@@ -307,7 +307,7 @@ if __name__ == "__main__":
         "beta": 0.3,             # weight of curriculum loss
         "tau": 0.6,             # threshold for curriculum loss
         "queue_size": 3,        # size of the queue for storing features
-        "threshold_min": 0.5,   # minimum threshold for curriculum loss
+        "threshold_min": 0.9,   # minimum threshold for curriculum loss
         "threshold_max": 0.9,   # maximum threshold for curriculum loss
     }
 
