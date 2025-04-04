@@ -234,20 +234,20 @@ if __name__ == "__main__":
         
         # alg
         "alg": "mgrada",
-        "batch_size": 32,
-        "epochs": 50,
-        "it_per_epoch": 50,
+        "batch_size": 8,
+        "epochs": 200,
+        "it_per_epoch": 30,
         "optimizer": "Adam",
-        "lr": 0.0003,
+        "lr": 0.001,
 
         # specific
-        "t": 0.9,               # sharpening temperature
-        "transfer_weight": 1,   # weight of transfer loss
-        "alpha": 0.99,          # momentum for teacher model
-        "sigma": 0.25,          # bandwidth for similarity matrix
+        "t": 0.4,               # sharpening temperature
+        "transfer_weight": 4,   # weight of transfer loss
+        "alpha": 0,          # momentum for teacher model
+        "sigma": 0.1,          # bandwidth for similarity matrix
         "gamma": 0.99,          # decay for label propagation
-        "beta": 10,             # weight of curriculum loss
-        "tau": 0.5,             # threshold for curriculum loss
+        "beta": 0.3,             # weight of curriculum loss
+        "tau": 0.6,             # threshold for curriculum loss
         "queue_size": 3,        # size of the queue for storing features
         "threshold_min": 0.5,   # minimum threshold for curriculum loss
         "threshold_max": 0.9,   # maximum threshold for curriculum loss
@@ -267,20 +267,20 @@ if __name__ == "__main__":
         # alg
         "alg": "mgrada",
         "batch_size": 8,
-        "epochs": 10,
-        "it_per_epoch": 50,
+        "epochs": 200,
+        "it_per_epoch": 30,
         "optimizer": "Adam",
-        "lr": 0.0003,
+        "lr": 0.001,
 
         # specific
-        "t": 0.9,               # sharpening temperature
-        "transfer_weight": 1,   # weight of transfer loss
-        "alpha": 0.99,          # momentum for teacher model
-        "sigma": 0.25,          # bandwidth for similarity matrix
+        "t": 0.4,               # sharpening temperature
+        "transfer_weight": 4,   # weight of transfer loss
+        "alpha": 0,          # momentum for teacher model
+        "sigma": 0.1,          # bandwidth for similarity matrix
         "gamma": 0.99,          # decay for label propagation
-        "beta": 10,             # weight of curriculum loss
-        "tau": 0.5,             # threshold for curriculum loss
-        "queue_size": 5,        # size of the queue for storing features
+        "beta": 0.3,             # weight of curriculum loss
+        "tau": 0.6,             # threshold for curriculum loss
+        "queue_size": 3,        # size of the queue for storing features
         "threshold_min": 0.5,   # minimum threshold for curriculum loss
         "threshold_max": 0.9,   # maximum threshold for curriculum loss
     }
