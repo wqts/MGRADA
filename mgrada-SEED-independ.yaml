@@ -15,9 +15,7 @@ parameters:
   mode:
     value: independ
   n_labeled_subject:
-    distribution: int_uniform
-    min: 1
-    max: 13
+    value: 13
   feature:
     value: de
   in_feature:
@@ -26,36 +24,32 @@ parameters:
   alg:
     value: mgrada
   batch_size:
-    distribution: categorical
-    values:
-    - 8
-    - 16
-    - 32
+    value: 8
   epochs:
-    value: 200
+    value: 400
   it_per_epoch:
-    distribution: categorical
-    values:
-    - 10
-    - 20
-    - 30
-    # - 40
-    # - 50
+    value: 30
   optimizer:
     value: Adam
   lr:
-    distribution: log_uniform_values
-    min: 1e-4
-    max: 1e-3
+    value: 0.001
   # specific
   t:
-    distribution: uniform
-    min: 0.1
-    max: 0.9
+    distribution: categorical
+    values:
+    - 0.1
+    - 0.3
+    - 0.5
+    - 0.7
+    - 0.9
   transfer_weight:
-    distribution: log_uniform_values
-    min: 0.1
-    max: 10
+    distribution: categorical
+    values:
+    - 0.1
+    - 0.5
+    - 1.0
+    - 5.0
+    - 10.0
   alpha:
     distribution: categorical
     values:
@@ -64,9 +58,13 @@ parameters:
     - 0.999
     - 0.9999
   sigma:
-    distribution: uniform
-    min: 0.1
-    max: 0.5
+    distribution: categorical
+    values:
+    - 0.1
+    - 0.3
+    - 0.5
+    - 0.7
+    - 0.9
   gamma:
     distribution: categorical
     values:
@@ -75,20 +73,38 @@ parameters:
     - 0.999
     - 0.9999
   beta:
-    distribution: uniform
-    min: 0.0
-    max: 1.0
+    distribution: categorical
+    values:
+    - 0.1
+    - 0.3
+    - 0.5
+    - 0.7
+    - 0.9
   tau:
-    distribution: uniform
-    min: 0.0
-    max: 1.0      
+    distribution: categorical
+    values:
+    - 0.2
+    - 0.4
+    - 0.6
+    - 0.8
+    - 1.0   
   queue_size:
     distribution: int_uniform
     min: 1
-    max: 3
+    max: 4
   threshold_min:
-    min: 0.0
-    max: 1.0
+    distribution: categorical
+    values:
+    - 0.1
+    - 0.2
+    - 0.3
+    - 0.4
   threshold_max:
-    value: 1.0
+    distribution: categorical
+    values:
+    - 0.5
+    - 0.6
+    - 0.7
+    - 0.8
+    - 0.9
 program: mgrada.py
