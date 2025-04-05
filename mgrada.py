@@ -10,7 +10,7 @@ from lib.load_data import load_data
 from lib.model import Model
 from lib.model import Model, DomainDiscriminator, DomainAdversarialLoss
 from lib.pipeline import main
-from lib.utils import test, get_batch_indices, sharpen
+from lib.utils import test, get_batch_indices, sharpen, set_global_seed
 
 WorkerDoneData = collections.namedtuple("WorkerDoneData", ("best_accuracy"))
 
@@ -180,6 +180,8 @@ def main_worker(sweep_q, worker_q):
     config = worker_data.config
     fold = worker_data.num + 1
 
+    set_global_seed(config["seed"])
+
     if torch.cuda.is_available():
         gpu_count = torch.cuda.device_count()
         gpu_id = fold % gpu_count
@@ -235,7 +237,7 @@ if __name__ == "__main__":
         # alg
         "alg": "mgrada",
         "batch_size": 8,
-        "epochs": 200,
+        "epochs": 20,
         "it_per_epoch": 30,
         "optimizer": "Adam",
         "lr": 0.001,
@@ -321,6 +323,9 @@ if __name__ == "__main__":
     config["device"] = "cpu"
     if torch.cuda.is_available():
         config["device"] = "cuda"
+    config["seed"] = 0
+    set_global_seed(config["seed"])
+
     # config["folds"] = 1
     paths = ["./data", "/kaggle/input/eeg-data", "/root/autodl-fs/eeg-data"]
     for path in paths:
